@@ -1,9 +1,9 @@
 name: Update readme ⭐️ progress
 
 on:
-    # !Please set a different minute than 51 if you enable this!
-    # schedule:
-    #     - cron: "51 */6 * * *" # Every 6 hours
+    push:
+        branches:
+          - main
     workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
             contents: write
         steps:
             - uses: actions/checkout@v4
-            - uses: k2bd/advent-readme-stars@v1
+            - uses: djrobson/advent-readme-stars@v1
               with:
                   userId: ${{ secrets.AOC_USER_ID }}
                   sessionCookie: ${{ secrets.AOC_SESSION }}
