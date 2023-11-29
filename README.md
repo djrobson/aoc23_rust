@@ -104,7 +104,7 @@ In order to submit part of a solution for checking, append the `--submit <part>`
 cargo all
 
 # output:
-#     Running `target/release/advent_of_code`
+#     Running `target/release/aoc23_rust`
 # ----------
 # | Day 01 |
 # ----------

@@ -1,5 +1,5 @@
 [package]
-name = "advent_of_code"
+name = "aoc23_rust"
 version = "0.1.0"
 authors = ["Dale Robson <1682504+djrobso@users.noreply.github.com>"]
 edition = "2021"

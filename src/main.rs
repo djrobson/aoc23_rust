@@ -1,10 +1,10 @@
-use advent_of_code::template::commands::{all, download, read, scaffold, solve};
+use aoc23_rust::template::commands::{all, download, read, scaffold, solve};
 use args::{parse, AppArguments};
 
 mod args {
     use std::process;
 
-    use advent_of_code::Day;
+    use aoc23_rust::Day;
 
     pub enum AppArguments {
         Download {

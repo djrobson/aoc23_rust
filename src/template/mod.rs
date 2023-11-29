@@ -24,11 +24,11 @@ pub fn read_file(folder: &str, day: Day) -> String {
 macro_rules! solution {
     ($day:expr) => {
         /// The current day.
-        const DAY: advent_of_code::Day = advent_of_code::day!($day);
+        const DAY: aoc23_rust::Day = aoc23_rust::day!($day);
 
         fn main() {
-            use advent_of_code::template::runner::*;
-            let input = advent_of_code::template::read_file("inputs", DAY);
+            use aoc23_rust::template::runner::*;
+            let input = aoc23_rust::template::read_file("inputs", DAY);
             run_part(part_one, &input, DAY, 1);
             run_part(part_two, &input, DAY, 2);
         }
