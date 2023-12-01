@@ -18,6 +18,12 @@ pub fn read_file(folder: &str, day: Day) -> String {
     let f = fs::read_to_string(filepath);
     f.expect("could not open input file")
 }
+pub fn read_second_example(folder: &str, day: Day) -> String {
+    let cwd = env::current_dir().unwrap();
+    let filepath = cwd.join("data").join(folder).join(format!("{day}_02.txt"));
+    let f = fs::read_to_string(filepath);
+    f.expect("could not open input file")
+}
 
 /// Creates the constant `DAY` and sets up the input and runner for each part.
 #[macro_export]
