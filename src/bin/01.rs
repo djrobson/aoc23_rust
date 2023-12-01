@@ -56,12 +56,12 @@ pub fn part_two(input: &str) -> Option<u32> {
                 }
                 offset += 1;
             }
-            let num = {
+            /*let num = {
                 let first = nums[0];
                 let last = nums[nums.len() - 1];
                 u32::from(first * 10 + last)
             };
-            //println!("{} became {:?} with val {}", line, &nums, num);
+            println!("{} became {:?} with val {}", line, &nums, num);*/
             nums
         })
         .collect();
@@ -92,6 +92,6 @@ mod tests {
     #[test]
     fn test_part_two_real() {
         let result = part_two(&aoc23_rust::template::read_file("inputs", DAY));
-        assert_eq!(result, Some(281));
+        assert_eq!(result, Some(54706));
     }
 }
