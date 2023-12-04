@@ -44,7 +44,7 @@ pub fn part_one(input: &str) -> Option<u32> {
             }
         })
         .sum();
-    Some(total as u32)
+    Some(total)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {

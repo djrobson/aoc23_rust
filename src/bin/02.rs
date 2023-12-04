@@ -12,7 +12,7 @@ fn parse_input(input: &str) -> Vec<HashMap<&str, u32>> {
             for color in colors {
                 let color_counts: Vec<&str> = color.split(", ").collect();
                 for color_count in color_counts {
-                    let color_count_pair: Vec<&str> = color_count.split(" ").collect();
+                    let color_count_pair: Vec<&str> = color_count.split(' ').collect();
                     let new_count: u32 = color_count_pair[0].parse().unwrap();
                     match game.get(color_count_pair[1]) {
                         Some(x) => {

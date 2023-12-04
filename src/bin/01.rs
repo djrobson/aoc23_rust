@@ -15,7 +15,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 fn is_ascii_numeric(input: u8) -> bool {
-    input >= b'1' && input <= b'9'
+    (b'1'..=b'9').contains(&input)
 }
 pub fn part_two(input: &str) -> Option<u32> {
     let patterns = [

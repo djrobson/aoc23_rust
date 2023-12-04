@@ -20,7 +20,7 @@ fn get_parts_from_input(input_grid: &Vec<Vec<char>>) -> Vec<Part> {
                 let mut next_num: String = "".to_string();
                 let start_row = row;
                 let start_col = col;
-                let end_row = row;
+                let _end_row = row;
 
                 while col < input_grid[row].len() && input_grid[row][col].is_numeric() {
                     next_num.push(input_grid[row][col]);
@@ -30,10 +30,10 @@ fn get_parts_from_input(input_grid: &Vec<Vec<char>>) -> Vec<Part> {
 
                 parts.push(Part {
                     num: next_num.parse::<u32>().unwrap(),
-                    start_row: start_row,
-                    start_col: start_col,
-                    _end_row: end_row,
-                    end_col: end_col,
+                    start_row,
+                    start_col,
+                    _end_row,
+                    end_col,
                 });
             } else {
                 col += 1;
@@ -82,7 +82,7 @@ pub fn part_one(input: &str) -> Option<u32> {
             let row = part.start_row;
             let mut col = part.start_col;
             let mut found_symbol = false;
-            while col < part.end_col && found_symbol == false {
+            while col < part.end_col && !found_symbol {
                 for &(dx, dy) in adjascent.iter() {
                     let new_row = row as i32 + dx;
                     let new_col = col as i32 + dy;
@@ -90,11 +90,9 @@ pub fn part_one(input: &str) -> Option<u32> {
                         && new_col >= 0
                         && new_row < input_grid.len() as i32
                         && new_col < input_grid[row].len() as i32
-                    {
-                        if symbols.contains(&input_grid[new_row as usize][new_col as usize]) {
+                        && symbols.contains(&input_grid[new_row as usize][new_col as usize]) {
                             found_symbol = true;
                             break;
-                        }
                     }
                 }
                 col += 1;
@@ -146,13 +144,11 @@ pub fn part_two(input: &str) -> Option<u32> {
                 for &(dx, dy) in adjascent.iter() {
                     let new_row = row.saturating_add_signed(dx);
                     let new_col = col.saturating_add_signed(dy);
-                    if new_row < input_grid.len() && new_col < input_grid[row].len() {
-                        if &input_grid[new_row][new_col] == &'*' {
-                            let mul = muls.get_mut(&(new_row, new_col)).expect("found new *");
-                            if !mul.contains(&part) {
-                                mul.push(part.clone());
-                                break;
-                            }
+                    if new_row < input_grid.len() && new_col < input_grid[row].len() && input_grid[new_row][new_col] == '*' {
+                        let mul = muls.get_mut(&(new_row, new_col)).expect("found new *");
+                        if !mul.contains(part) {
+                            mul.push(*part);
+                            break;
                         }
                     }
                 }
