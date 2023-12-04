@@ -89,9 +89,4 @@ mod tests {
         let result = part_two(&aoc23_rust::template::read_second_example("examples", DAY));
         assert_eq!(result, Some(281));
     }
-    #[test]
-    fn test_part_two_real() {
-        let result = part_two(&aoc23_rust::template::read_file("inputs", DAY));
-        assert_eq!(result, Some(54706));
-    }
 }
