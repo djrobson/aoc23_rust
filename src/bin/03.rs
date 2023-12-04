@@ -90,9 +90,10 @@ pub fn part_one(input: &str) -> Option<u32> {
                         && new_col >= 0
                         && new_row < input_grid.len() as i32
                         && new_col < input_grid[row].len() as i32
-                        && symbols.contains(&input_grid[new_row as usize][new_col as usize]) {
-                            found_symbol = true;
-                            break;
+                        && symbols.contains(&input_grid[new_row as usize][new_col as usize])
+                    {
+                        found_symbol = true;
+                        break;
                     }
                 }
                 col += 1;
@@ -144,7 +145,10 @@ pub fn part_two(input: &str) -> Option<u32> {
                 for &(dx, dy) in adjascent.iter() {
                     let new_row = row.saturating_add_signed(dx);
                     let new_col = col.saturating_add_signed(dy);
-                    if new_row < input_grid.len() && new_col < input_grid[row].len() && input_grid[new_row][new_col] == '*' {
+                    if new_row < input_grid.len()
+                        && new_col < input_grid[row].len()
+                        && input_grid[new_row][new_col] == '*'
+                    {
                         let mul = muls.get_mut(&(new_row, new_col)).expect("found new *");
                         if !mul.contains(part) {
                             mul.push(*part);
