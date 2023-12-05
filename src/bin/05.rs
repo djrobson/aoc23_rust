@@ -1,6 +1,5 @@
 aoc23_rust::solution!(5);
 
-use std::io;
 use rayon::prelude::*;
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -80,24 +79,28 @@ pub fn part_two(input: &str) -> Option<u32> {
     let total_range: usize = seed_ranges.iter().map(|range| range.1).sum();
     println!("{total_range}");
     //for seed_range in seed_ranges {
-    let minimum = seed_ranges.par_iter().map(|seed_range| {
-        let mut min_seed = usize::MAX;
-        for seed in seed_range.0..seed_range.0 + seed_range.1 {
-            let mut mapped_seed = seed;
-            for map in &maps {
-                //let mut found_rule = false;
-                'rules: for rule in map {
-                    if mapped_seed >= rule.1 && mapped_seed < (rule.1 + rule.2) {
-                        mapped_seed = (mapped_seed - rule.1) + rule.0;
-                        //found_rule = true;
-                        break 'rules;
+    let minimum = seed_ranges
+        .par_iter()
+        .map(|seed_range| {
+            let mut min_seed = usize::MAX;
+            for seed in seed_range.0..seed_range.0 + seed_range.1 {
+                let mut mapped_seed = seed;
+                for map in &maps {
+                    //let mut found_rule = false;
+                    'rules: for rule in map {
+                        if mapped_seed >= rule.1 && mapped_seed < (rule.1 + rule.2) {
+                            mapped_seed = (mapped_seed - rule.1) + rule.0;
+                            //found_rule = true;
+                            break 'rules;
+                        }
                     }
                 }
+                min_seed = min_seed.min(mapped_seed);
             }
-            min_seed = min_seed.min(mapped_seed);
-        }
-        min_seed
-    }).min().unwrap();
+            min_seed
+        })
+        .min()
+        .unwrap();
     Some(minimum as u32)
 }
 
