@@ -1,6 +1,6 @@
 aoc23_rust::solution!(4);
 
-fn parse_input(input: &str) -> Vec<(Vec<u32>,Vec<u32>)> {
+fn parse_input(input: &str) -> Vec<(Vec<u32>, Vec<u32>)> {
     input
         .lines()
         .map(|line| {
@@ -62,20 +62,18 @@ pub fn part_two(input: &str) -> Option<u32> {
         })
         .collect();
 
-    // TODO: re-write this with dynamic programming
     // initialize the list backwards since we're guaranteed to terminate
     let mut copies: Vec<usize> = vec![0; num_lists.len()];
     for x in (0..num_lists.len()).rev() {
-        let this_win_count:usize  = if my_win_counts[x] > 0 {
+        copies[x] = if my_win_counts[x] > 0 {
             // grab items from vec at offset x+1 to x+my_win_counts[x]
             // and sum them together
-            let list_after = copies.split_at(x+1).1;
+            let list_after = copies.split_at(x + 1).1;
             let list_until = list_after.split_at(my_win_counts[x]).0;
-            list_until.iter().sum::<usize>()+1
+            list_until.iter().sum::<usize>() + 1
         } else {
             1
         };
-        copies[x] = this_win_count;
     }
 
     Some(copies.iter().sum::<usize>() as u32)
