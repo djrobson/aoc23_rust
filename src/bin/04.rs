@@ -1,9 +1,7 @@
-use std::collections::VecDeque;
-
 aoc23_rust::solution!(4);
 
-pub fn part_one(input: &str) -> Option<u32> {
-    let num_lists: Vec<(Vec<u32>, Vec<u32>)> = input
+fn parse_input(input: &str) -> Vec<(Vec<u32>,Vec<u32>)> {
+    input
         .lines()
         .map(|line| {
             let nums: Vec<&str> = line.split(':').collect::<Vec<&str>>()[1]
@@ -21,7 +19,10 @@ pub fn part_one(input: &str) -> Option<u32> {
                 .collect();
             (winning_nums, have_nums)
         })
-        .collect();
+        .collect()
+}
+pub fn part_one(input: &str) -> Option<u32> {
+    let num_lists: Vec<(Vec<u32>, Vec<u32>)> = parse_input(input);
 
     let counts: Vec<usize> = num_lists
         .iter()
@@ -48,25 +49,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let num_lists: Vec<(Vec<u32>, Vec<u32>)> = input
-        .lines()
-        .map(|line| {
-            let nums: Vec<&str> = line.split(':').collect::<Vec<&str>>()[1]
-                .split('|')
-                .collect();
-            let winning_nums = nums[0]
-                .trim()
-                .split(' ')
-                .filter_map(|x| x.parse().ok())
-                .collect();
-            let have_nums = nums[1]
-                .trim()
-                .split(' ')
-                .filter_map(|x| x.parse().ok())
-                .collect();
-            (winning_nums, have_nums)
-        })
-        .collect();
+    let num_lists: Vec<(Vec<u32>, Vec<u32>)> = parse_input(input);
 
     let my_win_counts: Vec<usize> = num_lists
         .iter()
@@ -80,25 +63,22 @@ pub fn part_two(input: &str) -> Option<u32> {
         .collect();
 
     // TODO: re-write this with dynamic programming
-    // initialize the list with the starting cards
-    let mut copies: VecDeque<usize> = VecDeque::new();
-    for x in 0..num_lists.len() {
-        copies.push_back(x); // we default to the list befor we add the copies
+    // initialize the list backwards since we're guaranteed to terminate
+    let mut copies: Vec<usize> = vec![0; num_lists.len()];
+    for x in (0..num_lists.len()).rev() {
+        let this_win_count:usize  = if my_win_counts[x] > 0 {
+            // grab items from vec at offset x+1 to x+my_win_counts[x]
+            // and sum them together
+            let list_after = copies.split_at(x+1).1;
+            let list_until = list_after.split_at(my_win_counts[x]).0;
+            list_until.iter().sum::<usize>()+1
+        } else {
+            1
+        };
+        copies[x] = this_win_count;
     }
 
-    // iterate through a growing list of copies
-    let mut index = 0;
-    while index < copies.len() {
-        let which_card = copies[index];
-        let cnt = my_win_counts[which_card];
-        //insert all the new copies on the end
-        for next in 0..cnt {
-            copies.push_back(which_card + next + 1);
-        }
-        index += 1;
-    }
-
-    Some(copies.len() as u32)
+    Some(copies.iter().sum::<usize>() as u32)
 }
 
 #[cfg(test)]
