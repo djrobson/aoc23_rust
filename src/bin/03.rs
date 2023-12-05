@@ -64,7 +64,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     let parts = get_parts_from_input(&input_grid);
     //dbg!(&parts);
 
-    let adjascent = [
+    let adjacent = [
         (-1, -1),
         (-1, 0),
         (-1, 1),
@@ -75,7 +75,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         (1, 1),
     ];
 
-    // for each number, check if it has an adjascent symbol
+    // for each number, check if it has an adjacent symbol
     let total = parts
         .iter()
         .filter_map(|part| {
@@ -83,7 +83,7 @@ pub fn part_one(input: &str) -> Option<u32> {
             let mut col = part.start_col;
             let mut found_symbol = false;
             while col < part.end_col && !found_symbol {
-                for &(dx, dy) in adjascent.iter() {
+                for &(dx, dy) in adjacent.iter() {
                     let new_row = row as i32 + dx;
                     let new_col = col as i32 + dy;
                     if new_row >= 0
@@ -116,7 +116,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     // find the start/end location of numbers in the input
     let parts = get_parts_from_input(&input_grid);
 
-    let adjascent = [
+    let adjacent = [
         (-1, -1),
         (-1, 0),
         (-1, 1),
@@ -135,14 +135,14 @@ pub fn part_two(input: &str) -> Option<u32> {
             }
         }
     }
-    // for each number, check if it has an adjascent symbol
+    // for each number, check if it has an adjacent symbol
     let _valid_parts = parts
         .iter()
         .map(|part| {
             let row = part.start_row;
             let mut col = part.start_col;
             while col < part.end_col {
-                for &(dx, dy) in adjascent.iter() {
+                for &(dx, dy) in adjacent.iter() {
                     let new_row = row.saturating_add_signed(dx);
                     let new_col = col.saturating_add_signed(dy);
                     if new_row < input_grid.len()

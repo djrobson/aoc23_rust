@@ -61,7 +61,7 @@ pub fn part_two(input: &str) -> Option<u32> {
             let red = colors.get("red").unwrap_or(&0);
             let blue = colors.get("blue").unwrap_or(&0);
             let green = colors.get("green").unwrap_or(&0);
-            red * blue * green // multiple the minum values together
+            red * blue * green // multiply the minumum values together
         })
         .sum(); // return the sum of the values
     Some(total)

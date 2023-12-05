@@ -41,7 +41,7 @@ fn locate_table(readme: &str) -> Result<TablePosition, Error> {
 
     if matches.len() > 2 {
         return Err(Error::Parser(
-            "{}: too many occurences of marker in README.".into(),
+            "{}: too many occurrences of marker in README.".into(),
         ));
     }
 
