@@ -1,5 +1,8 @@
 aoc23_rust::solution!(5);
 
+use std::io;
+use rayon::prelude::*;
+
 pub fn part_one(input: &str) -> Option<u32> {
     let mut input_lines = input.lines();
     let seeds: Vec<usize> = input_lines
@@ -75,9 +78,10 @@ pub fn part_two(input: &str) -> Option<u32> {
         }
     }
     let total_range: usize = seed_ranges.iter().map(|range| range.1).sum();
-
-    let mut min_seed = usize::MAX;
-    for seed_range in seed_ranges {
+    println!("{total_range}");
+    //for seed_range in seed_ranges {
+    let minimum = seed_ranges.par_iter().map(|seed_range| {
+        let mut min_seed = usize::MAX;
         for seed in seed_range.0..seed_range.0 + seed_range.1 {
             let mut mapped_seed = seed;
             for map in &maps {
@@ -92,9 +96,9 @@ pub fn part_two(input: &str) -> Option<u32> {
             }
             min_seed = min_seed.min(mapped_seed);
         }
-    }
-
-    Some(min_seed as u32)
+        min_seed
+    }).min().unwrap();
+    Some(minimum as u32)
 }
 
 #[cfg(test)]
