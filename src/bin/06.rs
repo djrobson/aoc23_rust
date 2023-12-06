@@ -25,8 +25,26 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(score as u32)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    // this would have been way faster to just type the two numbers
+    let input_lines: Vec<&str> = input.lines().collect();
+    let time: usize = input_lines[0]
+        .split_whitespace()
+        .skip(1)
+        .collect::<String>()
+        .parse()
+        .unwrap();
+    let distance: usize = input_lines[1]
+        .split_whitespace()
+        .skip(1)
+        .collect::<String>()
+        .parse()
+        .unwrap();
+
+    let score: usize = (0..time)
+        .filter(|&wait_secs| (time - wait_secs) * wait_secs > distance)
+        .count();
+    Some(score as u32)
 }
 
 #[cfg(test)]
@@ -42,6 +60,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&aoc23_rust::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(71503));
     }
 }
