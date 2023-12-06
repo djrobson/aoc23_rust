@@ -57,7 +57,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                 .collect::<Vec<usize>>()
         })
         .unwrap()
-        .chunks(2)
+        .chunks(2) // grab input as start and range
         .map(|chunk| (chunk[0], chunk[1]))
         .collect();
     let mut map_index = 0;
