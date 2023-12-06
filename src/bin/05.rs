@@ -78,6 +78,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     }
     let total_range: usize = seed_ranges.iter().map(|range| range.1).sum();
     println!("{total_range}");
+    // TODO: consider combining all maps into a mega map, then solve that flat translation
     //for seed_range in seed_ranges {
     let minimum = seed_ranges
         .par_iter()

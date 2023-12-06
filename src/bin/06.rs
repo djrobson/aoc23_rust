@@ -41,6 +41,9 @@ pub fn part_two(input: &str) -> Option<u32> {
         .parse()
         .unwrap();
 
+    /* TODO: consider using a binary search across the range to find:
+         the lowest winning number where n-1 fails and n succeeds
+         the highest winning number where n+1 fails and n succeeds */
     let score: usize = (0..time)
         .filter(|&wait_secs| (time - wait_secs) * wait_secs > distance)
         .count();
