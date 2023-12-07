@@ -73,22 +73,23 @@ impl Ord for Hand {
         // Implement comparison logic here
         // For example, compare the hand_type and bid fields
         // Return Ordering::Less, Ordering::Equal, or Ordering::Greater
-        if self.hand_type > other.hand_type {
-            return Ordering::Greater;
-        } else if self.hand_type < other.hand_type {
-            return Ordering::Less;
-        } else {
-            // we're the same hand type, scan for highest card
-            for n in 0..self.cards.len() {
-                if self.cards[n] > other.cards[n] {
-                    return Ordering::Greater;
-                } else if self.cards[n] < other.cards[n] {
-                    return Ordering::Less;
+        match self.hand_type.cmp(&other.hand_type) {
+
+            Ordering::Greater => Ordering::Greater,
+            Ordering::Less => Ordering::Less,
+            Ordering::Equal => {
+                // we're the same hand type, scan for highest card
+                for n in 0..self.cards.len() {
+                    match self.cards[n].cmp(&other.cards[n]) {
+                        Ordering::Greater => return Ordering::Greater,
+                        Ordering::Less => return Ordering::Less,
+                        Ordering::Equal => (),
+                    }
                 }
+                // we made it all the way through
+                Ordering::Equal
             }
         }
-        // we made it all the way through
-        Ordering::Equal
     }
 }
 
