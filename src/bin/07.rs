@@ -17,6 +17,7 @@ enum Card {
     Four = 4,
     Three = 3,
     Two = 2,
+    Joker = 1,
 }
 impl Card {
     // ???
@@ -26,6 +27,24 @@ impl Card {
             'K' => Card::King,
             'Q' => Card::Queen,
             'J' => Card::Jack,
+            'T' => Card::Ten,
+            '9' => Card::Nine,
+            '8' => Card::Eight,
+            '7' => Card::Seven,
+            '6' => Card::Six,
+            '5' => Card::Five,
+            '4' => Card::Four,
+            '3' => Card::Three,
+            '2' => Card::Two,
+            _ => panic!("unexpected card type"),
+        }
+    }
+    fn new2(card: &char) -> Card {
+        match card {
+            'A' => Card::Ace,
+            'K' => Card::King,
+            'Q' => Card::Queen,
+            'J' => Card::Joker,
             'T' => Card::Ten,
             '9' => Card::Nine,
             '8' => Card::Eight,
@@ -74,7 +93,6 @@ impl Ord for Hand {
         // For example, compare the hand_type and bid fields
         // Return Ordering::Less, Ordering::Equal, or Ordering::Greater
         match self.hand_type.cmp(&other.hand_type) {
-
             Ordering::Greater => Ordering::Greater,
             Ordering::Less => Ordering::Less,
             Ordering::Equal => {
@@ -99,7 +117,7 @@ impl PartialOrd for Hand {
     }
 }
 
-fn get_hand_type(hand: &[Card]) -> HandType {
+fn get_hand_type1(hand: &[Card]) -> HandType {
     let mut cards: HashMap<&Card, u32> = HashMap::new();
 
     for card in hand.iter() {
@@ -131,6 +149,44 @@ fn get_hand_type(hand: &[Card]) -> HandType {
     }
 }
 
+fn get_hand_type2(hand: &[Card]) -> HandType {
+    let mut cards: HashMap<&Card, u32> = HashMap::new();
+
+    for card in hand.iter() {
+        let entry = cards.entry(card).or_insert(0);
+        *entry += 1;
+    }
+
+    let key_count = cards.keys().len();
+    let values = cards.values().collect::<Vec<&u32>>();
+    if key_count == 1 {
+        HandType::Five
+    } else if key_count == 2 {
+        // check for 4ook and full house
+        if values[0] == &4 || values[1] == &4 {
+            todo!("check for joker");
+            HandType::Four
+        } else {
+            todo!("check for joker");
+            HandType::FullHouse
+        }
+    } else if key_count == 3 {
+        if values[0] == &3 || values[1] == &3 || values[2] == &3 {
+            todo!("check for joker");
+            HandType::Three
+        } else {
+            todo!("check for joker");
+            HandType::TwoPair
+        }
+    } else if key_count == 4 {
+        todo!("check for joker");
+        HandType::OnePair
+    } else {
+        todo!("check for joker");
+        HandType::HighCard
+    }
+}
+
 pub fn part_one(input: &str) -> Option<u32> {
     let mut hands: Vec<Hand> = input
         .lines()
@@ -142,7 +198,7 @@ pub fn part_one(input: &str) -> Option<u32> {
             Hand {
                 cards: cards.clone(),
                 bid: line[6..].parse().unwrap(),
-                hand_type: get_hand_type(cards),
+                hand_type: get_hand_type1(cards),
             }
         })
         .collect::<Vec<Hand>>();
@@ -158,8 +214,29 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(score)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    let mut hands: Vec<Hand> = input
+        .lines()
+        .map(|line| {
+            let cards = &line[..5]
+                .chars()
+                .map(|card| Card::new2(&card))
+                .collect::<Vec<Card>>();
+            Hand {
+                cards: cards.clone(),
+                bid: line[6..].parse().unwrap(),
+                hand_type: get_hand_type2(cards),
+            }
+        })
+        .collect::<Vec<Hand>>();
+    hands.sort();
+
+    let score = hands
+        .iter()
+        .enumerate()
+        .map(|(offset, hand)| (offset as u32 + 1) * hand.bid)
+        .sum();
+    Some(score)
 }
 
 #[cfg(test)]
@@ -175,6 +252,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&aoc23_rust::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(5905));
     }
 }
