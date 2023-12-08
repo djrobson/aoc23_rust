@@ -159,31 +159,60 @@ fn get_hand_type2(hand: &[Card]) -> HandType {
 
     let key_count = cards.keys().len();
     let values = cards.values().collect::<Vec<&u32>>();
+    let joker_count = hand.iter().filter(|&card| card == &Card::Joker).count();
     if key_count == 1 {
+        // kkkkk
         HandType::Five
     } else if key_count == 2 {
         // check for 4ook and full house
         if values[0] == &4 || values[1] == &4 {
-            todo!("check for joker");
-            HandType::Four
+            if joker_count == 1 || joker_count == 4 {
+                // kkkkj
+                HandType::Five
+            } else {
+                // kkkkq
+                HandType::Four
+            }
+        } else if joker_count == 2 || joker_count == 3 {
+            // kkjjj jjkkk
+            HandType::Five
         } else {
-            todo!("check for joker");
+            //kkqqq
             HandType::FullHouse
         }
     } else if key_count == 3 {
         if values[0] == &3 || values[1] == &3 || values[2] == &3 {
-            todo!("check for joker");
-            HandType::Three
+            // kkkqt  kkkqj jjjkq
+            match joker_count {
+                3 => HandType::Four,
+                1 => HandType::Four,
+                0 => HandType::Three,
+                _ => panic!("unexpected joker count"),
+            }
         } else {
-            todo!("check for joker");
-            HandType::TwoPair
+            // kkqqj kkqqt jjqqt            J3399
+            match joker_count {
+                2 => HandType::Four,
+                1 => HandType::FullHouse,
+                0 => HandType::TwoPair,
+                _ => panic!("unexpected joker count"),
+            }
         }
     } else if key_count == 4 {
-        todo!("check for joker");
-        HandType::OnePair
+        // kkqt9 kkqjt 5ja6j
+        match joker_count {
+            2 => HandType::Three,
+            1 => HandType::Three,
+            0 => HandType::OnePair,
+            _ => panic!("unexpected joker count {:?}", hand),
+        }
     } else {
-        todo!("check for joker");
-        HandType::HighCard
+        // kqt98 kqjt9
+        match joker_count {
+            1 => HandType::OnePair,
+            0 => HandType::HighCard,
+            _ => panic!("unexpected joker count"),
+        }
     }
 }
 
@@ -230,6 +259,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         })
         .collect::<Vec<Hand>>();
     hands.sort();
+    //dbg!("{}", &hands);
 
     let score = hands
         .iter()
