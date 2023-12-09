@@ -43,7 +43,7 @@ pub fn part_one(input: &str) -> Option<isize> {
         })
         .sum();
 
-    Some(total as isize)
+    Some(total)
 }
 
 pub fn part_two(input: &str) -> Option<isize> {
@@ -88,7 +88,7 @@ pub fn part_two(input: &str) -> Option<isize> {
         })
         .sum();
 
-    Some(total as isize)
+    Some(total)
 }
 
 #[cfg(test)]
