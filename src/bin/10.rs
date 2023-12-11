@@ -147,10 +147,17 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     let mut input_array: Vec<Vec<char>> = get_input_array(input);
 
+    /*
     let min_x = visited.iter().min_by_key(|&(x, _)| x).unwrap().0;
     let max_x = visited.iter().max_by_key(|&(x, _)| x).unwrap().0;
     let min_y = visited.iter().min_by_key(|&(_, y)| y).unwrap().1;
     let max_y = visited.iter().max_by_key(|&(_, y)| y).unwrap().1;
+    */
+
+    let min_x = 0;
+    let max_x = input_array[0].len();
+    let min_y = 0;
+    let max_y = input_array.len();
 
     let mut enclosed_points = 0;
     let sloc = get_start_location(&input_array);
@@ -158,22 +165,25 @@ pub fn part_two(input: &str) -> Option<u32> {
     let sshape = get_shape_from_direction(sdir);
     input_array[sloc.1][sloc.0] = sshape;
 
-    for y in min_y..=max_y {
+    for y in min_y..max_y {
         let mut is_inside = false;
-        for x in min_x..=max_x {
+        for x in min_x..max_x {
             let tile = input_array[y][x];
-            is_inside = match (is_inside, tile) {
-                (true, '|') => false,
-                (false, '|') => true,
-                (true, 'L') => false,
-                (false, 'L') => true,
-                (true, 'J') => false,
-                (false, 'J') => true,
-                (true, _) => true,
-                (false, _) => false,
-            };
-            if is_inside && (tile == '.' || !visited.contains(&(x, y))) {
+            //if is_inside && (tile == '.' || !visited.contains(&(x, y))) {
+            if is_inside && !visited.contains(&(x, y)) {
                 enclosed_points += 1;
+            } 
+            if visited.contains(&(x, y)) {
+                is_inside = match (is_inside, tile) {
+                    (true, '|') => false,
+                    (false, '|') => true,
+                    (true, 'F') => false,
+                    (false, 'F') => true,
+                    (true, '7') => false,
+                    (false, '7') => true,
+                    (true, _) => true,
+                    (false, _) => false,
+                };
             }
         }
     }
