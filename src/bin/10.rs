@@ -17,28 +17,36 @@ fn find_directions_from_start(
     let mut dirs: Vec<Direction> = Vec::new();
     if y > 1
         && x < input_array[y].len()
-        && (input_array[y-1][x] == '|' || input_array[y-1][x] == '7' || input_array[y-1][x] == 'F')
+        && (input_array[y - 1][x] == '|'
+            || input_array[y - 1][x] == '7'
+            || input_array[y - 1][x] == 'F')
     {
         dirs.push(Up);
     }
-    
+
     if y < input_array.len()
         && x < input_array[y].len()
-        && (input_array[y+1][x] == '|' || input_array[y+1][x] == 'J' || input_array[y+1][x] == 'L')
+        && (input_array[y + 1][x] == '|'
+            || input_array[y + 1][x] == 'J'
+            || input_array[y + 1][x] == 'L')
     {
         dirs.push(Down);
     }
 
     if y < input_array.len()
         && x > 1
-        && (input_array[y][x-1] == '-' || input_array[y][x-1] == 'F' || input_array[y][x-1] == 'L')
+        && (input_array[y][x - 1] == '-'
+            || input_array[y][x - 1] == 'F'
+            || input_array[y][x - 1] == 'L')
     {
         dirs.push(Left);
     }
 
     if y < input_array.len()
         && x < input_array[y].len()
-        && (input_array[y][x+1] == '-' || input_array[y][x+1] == 'J' || input_array[y][x+1] == '7')
+        && (input_array[y][x + 1] == '-'
+            || input_array[y][x + 1] == 'J'
+            || input_array[y][x + 1] == '7')
     {
         dirs.push(Right);
     }
@@ -107,7 +115,7 @@ fn get_input_array(input: &str) -> Vec<Vec<char>> {
         .collect()
 }
 
-fn get_start_location(input_array: &Vec<Vec<char>>) -> (usize, usize) {
+fn get_start_location(input_array: &[Vec<char>]) -> (usize, usize) {
     input_array
         .iter()
         .enumerate()
@@ -165,6 +173,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     let sshape = get_shape_from_direction(sdir);
     input_array[sloc.1][sloc.0] = sshape;
 
+    #[allow(clippy::needless_range_loop)] 
     for y in min_y..max_y {
         let mut is_inside = false;
         for x in min_x..max_x {
@@ -172,7 +181,7 @@ pub fn part_two(input: &str) -> Option<u32> {
             //if is_inside && (tile == '.' || !visited.contains(&(x, y))) {
             if is_inside && !visited.contains(&(x, y)) {
                 enclosed_points += 1;
-            } 
+            }
             if visited.contains(&(x, y)) {
                 is_inside = match (is_inside, tile) {
                     (true, '|') => false,

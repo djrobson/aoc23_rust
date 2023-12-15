@@ -16,8 +16,8 @@ fn get_min_distance_with_expansion(input: &str, expansion: usize) -> Option<usiz
     // consider pre-loading row and col list, then removing collisions during nitial parsing
     let mut row_stretch: Vec<usize> = Vec::new();
     let mut stretch_down: usize = 0;
-    for row in 0..input_lines.len() {
-        if input_lines[row].chars().filter(|c| c == &'#').count() == 0 {
+    for line in &input_lines {
+        if line.chars().filter(|c| c == &'#').count() == 0 {
             stretch_down += 1;
         }
         row_stretch.push(stretch_down * expansion);
@@ -26,8 +26,8 @@ fn get_min_distance_with_expansion(input: &str, expansion: usize) -> Option<usiz
     let mut stretch_right: usize = 0;
     for col in 0..input_lines[0].len() {
         let mut found = false;
-        for row in 0..input_lines.len() {
-            if input_lines[row].chars().nth(col).unwrap()  == '#' {
+        for line in &input_lines {
+            if line.chars().nth(col).unwrap() == '#' {
                 found = true;
                 break;
             }
@@ -38,9 +38,12 @@ fn get_min_distance_with_expansion(input: &str, expansion: usize) -> Option<usiz
         col_stretch.push(stretch_right * expansion);
     }
 
-    let mut coodinates_stretched: HashSet<(usize,usize)> = HashSet::new();
+    let mut coodinates_stretched: HashSet<(usize, usize)> = HashSet::new();
     for galaxy in coordinates.iter() {
-        let new_position = (galaxy.0 + col_stretch[galaxy.0], galaxy.1 + row_stretch[galaxy.1]);
+        let new_position = (
+            galaxy.0 + col_stretch[galaxy.0],
+            galaxy.1 + row_stretch[galaxy.1],
+        );
         //println!("({},{}) stretches to ({},{})", galaxy.0, galaxy.1, new_position.0, new_position.1);
         coodinates_stretched.insert(new_position);
     }
@@ -48,7 +51,8 @@ fn get_min_distance_with_expansion(input: &str, expansion: usize) -> Option<usiz
     let mut total_min_distance = 0;
     for gal1 in coodinates_stretched.iter() {
         for gal2 in coodinates_stretched.iter() {
-            let distance = (gal1.0 as i64 - gal2.0 as i64).abs() as usize + (gal1.1 as i64 - gal2.1 as i64).abs() as usize;
+            let distance = (gal1.0 as i64 - gal2.0 as i64).unsigned_abs()
+                + (gal1.1 as i64 - gal2.1 as i64).unsigned_abs();
             //println!("distance from {:?} to {:?} is {}", gal1, gal2, distance);
             total_min_distance += distance;
         }
@@ -57,7 +61,7 @@ fn get_min_distance_with_expansion(input: &str, expansion: usize) -> Option<usiz
     // we counted everything twice
     total_min_distance /= 2;
 
-    Some(total_min_distance)
+    Some(total_min_distance as usize)
 }
 
 pub fn part_one(input: &str) -> Option<usize> {
@@ -81,13 +85,15 @@ mod tests {
 
     #[test]
     fn test_part_two_10() {
-        let result = get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 9);
+        let result =
+            get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 9);
         assert_eq!(result, Some(1030));
     }
 
     #[test]
     fn test_part_two_100() {
-        let result = get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 99);
+        let result =
+            get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 99);
         assert_eq!(result, Some(8410));
     }
 }
