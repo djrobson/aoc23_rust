@@ -65,7 +65,8 @@ pub fn part_one(input: &str) -> Option<usize> {
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    get_min_distance_with_expansion(input, 1_000_000)
+    //get_min_distance_with_expansion(input, 1_000_000)
+    get_min_distance_with_expansion(input, 999_999)
 }
 
 #[cfg(test)]
@@ -80,13 +81,13 @@ mod tests {
 
     #[test]
     fn test_part_two_10() {
-        let result = get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 10);
+        let result = get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 9);
         assert_eq!(result, Some(1030));
     }
 
     #[test]
     fn test_part_two_100() {
-        let result = get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 100);
+        let result = get_min_distance_with_expansion(&aoc23_rust::template::read_file("examples", DAY), 99);
         assert_eq!(result, Some(8410));
     }
 }
