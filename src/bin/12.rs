@@ -103,38 +103,38 @@ pub fn part_two(_input: &str) -> Option<u32> {
 #[cfg(test)]
 mod tests {
     use super::*;
-/*
-    #[test]
-    fn test_part_one_1() {
-        let result = part_one("???.### 1,1,3");
-        assert_eq!(result, Some(1));
-    }
-    #[test]
-    fn test_part_one_2() {
-        let result = part_one(".??..??...?##. 1,1,3");
-        assert_eq!(result, Some(4));
-    }
-    #[test]
-    fn test_part_one_3() {
-        let result = part_one("?#?#?#?#?#?#?#? 1,3,1,6");
-        assert_eq!(result, Some(4));
-    }
-    #[test]
-    fn test_part_one_4() {
-        let result = part_one("????.#...#... 4,1,1");
-        assert_eq!(result, Some(1));
-    }
-    #[test]
-    fn test_part_one_5() {
-        let result = part_one("????.######..#####. 1,6,5");
-        assert_eq!(result, Some(4));
-    }
-    #[test]
-    fn test_part_one_6() {
-        let result = part_one("?###???????? 3,2,1");
-        assert_eq!(result, Some(10));
-    }
-*/
+    /*
+        #[test]
+        fn test_part_one_1() {
+            let result = part_one("???.### 1,1,3");
+            assert_eq!(result, Some(1));
+        }
+        #[test]
+        fn test_part_one_2() {
+            let result = part_one(".??..??...?##. 1,1,3");
+            assert_eq!(result, Some(4));
+        }
+        #[test]
+        fn test_part_one_3() {
+            let result = part_one("?#?#?#?#?#?#?#? 1,3,1,6");
+            assert_eq!(result, Some(4));
+        }
+        #[test]
+        fn test_part_one_4() {
+            let result = part_one("????.#...#... 4,1,1");
+            assert_eq!(result, Some(1));
+        }
+        #[test]
+        fn test_part_one_5() {
+            let result = part_one("????.######..#####. 1,6,5");
+            assert_eq!(result, Some(4));
+        }
+        #[test]
+        fn test_part_one_6() {
+            let result = part_one("?###???????? 3,2,1");
+            assert_eq!(result, Some(10));
+        }
+    */
     #[test]
     fn test_part_one_7() {
         let result = count_damaged_sequences(".#.###.#.######");
