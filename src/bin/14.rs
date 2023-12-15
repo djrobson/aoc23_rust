@@ -1,5 +1,5 @@
-use std::fmt::{Display, Formatter};
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 
 aoc23_rust::solution!(14);
 
@@ -93,6 +93,7 @@ fn tilt_board(rock_grid: &mut Vec<Vec<Rock>>, tilt: Tilt) {
             }
         }
         Tilt::West => {
+            #[allow(clippy::needless_range_loop)]
             for row in 0..length {
                 for col in 0..length {
                     // for each Round rock, slide it to a lower index row until it bumps into the top row or a Square rock
@@ -129,6 +130,7 @@ fn tilt_board(rock_grid: &mut Vec<Vec<Rock>>, tilt: Tilt) {
             }
         }
         Tilt::East => {
+            #[allow(clippy::needless_range_loop)]
             for row in 0..length {
                 for col in (0..length).rev() {
                     // for each Round rock, slide it to a lower index row until it bumps into the top row or a Square rock
@@ -158,26 +160,25 @@ fn tilt_around(rock_grid: &mut Vec<Vec<Rock>>) {
 
 pub fn part_two(input: &str) -> Option<u32> {
     let mut rock_grid = input
-    .lines()
-    .map(|line| {
-        line.chars()
-            .map(|c| match c {
-                'O' => Rock::Round,
-                '#' => Rock::Cube,
-                '.' => Rock::Empty,
-                _ => panic!("unexpected character in input: {}", c),
-            })
-            .collect::<Vec<_>>()
-    })
-    .collect::<Vec<_>>();
+        .lines()
+        .map(|line| {
+            line.chars()
+                .map(|c| match c {
+                    'O' => Rock::Round,
+                    '#' => Rock::Cube,
+                    '.' => Rock::Empty,
+                    _ => panic!("unexpected character in input: {}", c),
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
 
     let mut seen_grids: HashMap<Vec<Vec<Rock>>, usize> = HashMap::new();
     //seen_grids.insert(rock_grid.clone(), 0);
 
     'loops: for round in 0..1_000_000_000 {
         tilt_around(&mut rock_grid);
-        if seen_grids.contains_key(&rock_grid){
-
+        if seen_grids.contains_key(&rock_grid) {
             let loop_start = seen_grids.get(&rock_grid).unwrap();
             println!("found a loop at round {} back to {}", round, loop_start);
             // fast forward to the end of the iterations
@@ -185,8 +186,11 @@ pub fn part_two(input: &str) -> Option<u32> {
             let remaining_rounds = 1_000_000_000 - round;
             let remaining_loops = remaining_rounds / loop_length;
             let remaining_rounds_after_loops = remaining_rounds % loop_length;
-            println!("remaining rounds: {} loops: {}", remaining_rounds, remaining_loops);
-            for last_rounds in 0..remaining_rounds_after_loops-1 {
+            println!(
+                "remaining rounds: {} loops: {}",
+                remaining_rounds, remaining_loops
+            );
+            for last_rounds in 0..remaining_rounds_after_loops - 1 {
                 tilt_around(&mut rock_grid);
                 println!("last_round {} score {}", last_rounds, get_load(&rock_grid));
             }

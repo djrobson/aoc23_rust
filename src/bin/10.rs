@@ -173,7 +173,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     let sshape = get_shape_from_direction(sdir);
     input_array[sloc.1][sloc.0] = sshape;
 
-    #[allow(clippy::needless_range_loop)] 
+    #[allow(clippy::needless_range_loop)]
     for y in min_y..max_y {
         let mut is_inside = false;
         for x in min_x..max_x {
