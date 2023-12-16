@@ -144,8 +144,81 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(energized.len() as u32)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    let grid: Vec<Vec<Space>> = input
+        .lines()
+        .map(|line| {
+            line.chars()
+                .map(|c| match c {
+                    '.' => Empty,
+                    '|' => Vert,
+                    '\\' => UpLeft,
+                    '/' => UpRight,
+                    '-' => Horiz,
+                    _ => panic!("Invalid character"),
+                })
+                .collect()
+        })
+        .collect();
+
+    // for all starting points in the top edge going down, bottom edge going up, left edge going right, right edge going left
+    // find the max energized len
+    // return that max
+    let top_max = (0..grid[0].len())
+        .map(|x| {
+            let mut visited: HashSet<((usize, usize), Direction)> = HashSet::new();
+            find_nodes_in_path(&grid, (x, 0), Down, &mut visited);
+            visited
+                .iter()
+                .map(|((x, y), _)| (x, y))
+                .collect::<HashSet<_>>()
+                .len()
+        })
+        .max()
+        .unwrap();
+
+    let bottom_max = (0..grid[0].len())
+        .map(|x| {
+            let mut visited: HashSet<((usize, usize), Direction)> = HashSet::new();
+            find_nodes_in_path(&grid, (x, grid.len() - 1), Up, &mut visited);
+            visited
+                .iter()
+                .map(|((x, y), _)| (x, y))
+                .collect::<HashSet<_>>()
+                .len()
+        })
+        .max()
+        .unwrap();
+
+    let left_max = (0..grid.len())
+        .map(|y| {
+            let mut visited: HashSet<((usize, usize), Direction)> = HashSet::new();
+            find_nodes_in_path(&grid, (0, y), Right, &mut visited);
+            visited
+                .iter()
+                .map(|((x, y), _)| (x, y))
+                .collect::<HashSet<_>>()
+                .len()
+        })
+        .max()
+        .unwrap();
+
+    let right_max = (0..grid.len())
+        .map(|y| {
+            let mut visited: HashSet<((usize, usize), Direction)> = HashSet::new();
+            find_nodes_in_path(&grid, (grid[0].len() - 1, y), Left, &mut visited);
+            visited
+                .iter()
+                .map(|((x, y), _)| (x, y))
+                .collect::<HashSet<_>>()
+                .len()
+        })
+        .max()
+        .unwrap();
+
+    let maxes = [top_max, bottom_max, left_max, right_max];
+    let max_max = maxes.iter().max().unwrap();
+    Some(*max_max as u32)
 }
 
 #[cfg(test)]
@@ -161,6 +234,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&aoc23_rust::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(51));
     }
 }
