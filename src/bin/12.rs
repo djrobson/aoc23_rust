@@ -1,29 +1,7 @@
+use memoize::memoize;
 use rayon::prelude::*;
-use std::collections::HashMap;
 
 aoc23_rust::solution!(12);
-
-/*#[derive(Debug, Clone, Eq, PartialEq)]
-enum SpringState {
-    Unknown,
-    Damaged,
-    Operational,
-}*/
-
-/*fn parse_input(input: &str) -> (Vec<SpringState>, Vec<u32>) {
-    let parts: Vec<&str> = input.split(' ').collect();
-    let spring_states: Vec<SpringState> = parts[0]
-        .chars()
-        .map(|c| match c {
-            '?' => SpringState::Unknown,
-            '#' => SpringState::Damaged,
-            '.' => SpringState::Operational,
-            _ => panic!("Invalid character"),
-        })
-        .collect();
-    let numbers: Vec<u32> = parts[1].split(',').map(|s| s.parse().unwrap()).collect();
-    (spring_states, numbers)
-}*/
 
 fn count_damaged_sequences(input: &[u8]) -> Vec<u8> {
     // for and input like ".#.###.#.######" count the contiguous # and return a vector of the counts like 1,3,1,6
@@ -48,134 +26,74 @@ fn count_damaged_sequences(input: &[u8]) -> Vec<u8> {
     counts
 }
 
-fn count_options(
-    spring_states: &[u8],
-    numbers: &Vec<u8>,
-    total_working_needed: u8,
-    total_working_found: u8,
-    unknown_count: u8,
-    //seen: &mut HashMap<&[u8], usize>,
-) -> usize {
+#[memoize]
+fn count_options(spring_states: Vec<u8>, numbers: Vec<u8>) -> usize {
+
+    match (spring_states.is_empty(), numbers.is_empty()) {
+        (true, true) => return 0,
+        (true, false) => return 0,
+        (false, true) => return 0,
+        _ => (),
+    }
+
+    if spring_states[0] == b'.' {
+        // remove the . and try again
+        let mut new_spring_states = spring_states.clone();
+        new_spring_states.remove(0);
+        let count = count_options(new_spring_states, numbers);
+        return count;
+    }
+
     // count the number of ways we can replace an Unknown with a Damaged or Operatioanl to produce a count_damaged_sequences matching the numbers vec
-    if total_working_found > total_working_needed
-        || total_working_needed > (total_working_found + unknown_count)
-    {
-        return 0;
-    }
-
-    if unknown_count == 0 {
-        // no more unknowns, check if we have a match
-        let prefix = count_damaged_sequences(spring_states);
-        if &prefix == numbers {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
     let mut ways = 0;
 
     for i in 0..spring_states.len() {
+        // scan past all the #
         if spring_states[i] == b'?' {
             // try it with a #
-            let mut new_spring_states = spring_states.to_owned(); // Create a mutable copy of spring_states
-            new_spring_states[i] = b'#';
-            // grab all the u8 from the end of new_spring_states that are not ?
-            //let prefix = count_damaged_sequences(&new_spring_states);
+            if numbers.len() == 1
+                && i == numbers[0] as usize
+                && spring_states[i..].iter().all(|c| *c != b'#')
+            {
+                // end  the last sequence and jump to the end
+                println!("match 1 {:?} {:?}", spring_states, numbers);
+                return 1;
+            }
+            if i < numbers[0] as usize {
+                let mut oper_spring_states = spring_states.clone(); // Create a mutable copy of spring_states
+                oper_spring_states[i] = b'#';
 
-            let prefix = count_damaged_sequences(&new_spring_states);
-            if numbers.starts_with(&prefix) {
-                let mut total_prefix_found = prefix.iter().sum::<u8>();
-
-                // memoize all content after the first total_prefix_found #s and numbers after prefix.len()
-                /*let spring_suffix = new_spring_states
-                            .iter()
-                            .skip_while(|c| {
-                                if total_prefix_found > 0 {
-                                    if *c == &b'#' {
-                                        total_prefix_found -= 1;
-                                    }
-                                    true
-                                } else {
-                                    false
-                                }
-                            }).collect();
-
-                let numbers_suffix = numbers
-                            .iter()
-                            .skip(prefix.len())
-                            .collect();
-                // check see hashtable for spring_suffic, numbers_suffix tuple
-                let suffix = (spring_suffix, numbers_suffix);
-                if seen.contains_key(&suffix) {
-                    ways += seen.get(&suffix).unwrap();
-                    break;
-                }*/
-
-                // check if the next stretch of working springs is too long
-                match numbers.get(prefix.len()) {
-                    Some(n) => {
-                        let next_spring_count = new_spring_states
-                            .iter()
-                            .skip_while(|c| {
-                                if total_prefix_found > 0 {
-                                    if *c == &b'#' {
-                                        total_prefix_found -= 1;
-                                    }
-                                    true
-                                } else {
-                                    false
-                                }
-                            })
-                            .skip_while(|c| *c == &b'.')
-                            .take_while(|c| *c == &b'#')
-                            .count();
-                        if next_spring_count <= *n as usize {
-                            let count = count_options(
-                                &new_spring_states,
-                                numbers,
-                                total_working_needed,
-                                total_working_found + 1,
-                                unknown_count - 1,
-                                //seen,
-                            );
-                            //seen.insert(suffix, count);
-                            ways += count;
-                        }
-                    }
-                    None => {
-                        // we matched the whole string, it doens't matter what we do with the rest of the unknowns
-                        ways += 1;
-                        break;
-                    }
-                }
+                let count = count_options(oper_spring_states, numbers.clone());
+                ways += count;
             }
 
             // try it with a .
-            let mut new_spring_states = spring_states.to_owned(); // Create another mutable copy of spring_states
-            new_spring_states[i] = b'.';
+            let mut broken_spring_states = spring_states.to_owned(); // Create another mutable copy of spring_states
+            broken_spring_states[i] = b'.';
 
-            let suffix = new_spring_states.split(|c| *c == b'?').last();
-            //if seen.contains_key(&suffix) {
-            //    ways += seen.get(&suffix).unwrap();
-            //} else {
-
-            let prefix = count_damaged_sequences(&new_spring_states);
-            if numbers.starts_with(&prefix) {
-                let count = count_options(
-                    &new_spring_states,
-                    numbers,
-                    total_working_needed,
-                    total_working_found,
-                    unknown_count - 1,
-                    //seen,
-                );
-                //seen.insert(suffix.clone(), count);
+            let prefix = count_damaged_sequences(&broken_spring_states);
+            if !prefix.is_empty() && numbers.clone().starts_with(&prefix) {
+                let spring_suffix = broken_spring_states
+                    .split_at(numbers[0] as usize + 1)
+                    .1
+                    .to_vec();
+                let mut numbers_suffix = numbers.clone();
+                numbers_suffix.remove(0);
+                let count = count_options(spring_suffix, numbers_suffix);
                 ways += count;
+            } else {
+                ways += count_options(broken_spring_states, numbers.clone());
             }
-            //}
-            break;
+
+            return ways;
         }
+    }
+    // we found no ? so check if we're good
+    if count_damaged_sequences(&spring_states) == numbers
+        && !spring_states.iter().any(|c| *c == b'?')
+    {
+        println!("match 2 {} {:?} {:?}", ways, spring_states, numbers);
+        ways += 1;
     }
 
     ways
@@ -185,27 +103,14 @@ pub fn part_one(input: &str) -> Option<usize> {
     let mut total = 0;
     for line in input.lines() {
         let mut parts = line.split(' ');
-        let spring_states = parts.next().unwrap().as_bytes();
+        let spring_states: Vec<u8> = parts.next().unwrap().as_bytes().to_vec();
         let numbers: Vec<u8> = parts
             .next()
             .unwrap()
             .split(',')
             .map(|s| s.parse().unwrap())
             .collect();
-        //println!("{:?}, {:?}", spring_states, &numbers);
-        let total_working_needed: u8 = numbers.iter().sum();
-        let total_working_found = spring_states.iter().filter(|s| **s == b'#').count();
-        let unknown_count = spring_states.iter().filter(|s| **s == b'?').count();
-
-        let mut seen: HashMap<&[u8], usize> = HashMap::new();
-        total += count_options(
-            spring_states,
-            &numbers,
-            total_working_needed,
-            total_working_found as u8,
-            unknown_count as u8,
-            //&mut seen,
-        );
+        total += count_options(spring_states, numbers);
     }
     Some(total)
 }
@@ -230,33 +135,8 @@ pub fn part_two(input: &str) -> Option<usize> {
             let repeat_numbers = numbers.repeat(5);
             //println!("{:?}, {:?}", spring_states, &numbers);
 
-            let total_working_needed: u8 = repeat_numbers.iter().sum();
-            let total_working_found = spring_states
-                .as_bytes()
-                .iter()
-                .filter(|s| **s == b'#')
-                .count();
-            let unknown_count = spring_states
-                .as_bytes()
-                .iter()
-                .filter(|s| **s == b'?')
-                .count();
-
-            let mut seen: HashMap<&[u8], usize> = HashMap::new();
-            let count = count_options(
-                spring_states.as_bytes(),
-                &repeat_numbers,
-                total_working_needed,
-                total_working_found as u8,
-                unknown_count as u8,
-                //&mut seen,
-            );
-            println!(
-                "finished {} with count: {}, cache records {}",
-                line,
-                count,
-                seen.len()
-            );
+            let count = count_options(spring_states.as_bytes().to_vec(), repeat_numbers);
+            println!("finished {} with count: {}", line, count,);
             count as usize
         })
         .sum();
@@ -295,6 +175,12 @@ mod tests {
         let result = part_one("????.######..#####. 1,6,5");
         assert_eq!(result, Some(4));
     }
+
+    #[test]
+    fn test_part_one_5_2() {
+        let result = part_one("??.#. 1,1");
+        assert_eq!(result, Some(2));
+    }
     #[test]
     fn test_part_one_6() {
         let result = part_one("?###???????? 3,2,1");
@@ -305,6 +191,27 @@ mod tests {
     fn test_part_one_7() {
         let result = count_damaged_sequences(b".#.###.#.######");
         assert_eq!(result, vec![1, 3, 1, 6]);
+    }
+    #[test]
+    fn test_part_one_8() {
+        let result = part_one("### 3");
+        assert_eq!(result, Some(1));
+    }
+    #[test]
+    fn test_part_one_9() {
+        let result = part_one(".###. 3");
+        assert_eq!(result, Some(1));
+    }
+    #[test]
+    fn test_part_one_10() {
+        let result = part_one(".?#?. 2");
+        assert_eq!(result, Some(2));
+    }
+
+    #[test]
+    fn test_part_one_11() {
+        let result = part_one("?#? 2");
+        assert_eq!(result, Some(2));
     }
 
     #[test]
