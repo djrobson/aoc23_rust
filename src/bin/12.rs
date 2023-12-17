@@ -83,12 +83,9 @@ fn count_options(
             // grab all the u8 from the end of new_spring_states that are not ?
             //let prefix = count_damaged_sequences(&new_spring_states);
 
- 
-
             let prefix = count_damaged_sequences(&new_spring_states);
             if numbers.starts_with(&prefix) {
                 let mut total_prefix_found = prefix.iter().sum::<u8>();
-
 
                 // memoize all content after the first total_prefix_found #s and numbers after prefix.len()
                 /*let spring_suffix = new_spring_states
@@ -114,7 +111,6 @@ fn count_options(
                     ways += seen.get(&suffix).unwrap();
                     break;
                 }*/
-
 
                 // check if the next stretch of working springs is too long
                 match numbers.get(prefix.len()) {
@@ -164,19 +160,19 @@ fn count_options(
             //    ways += seen.get(&suffix).unwrap();
             //} else {
 
-                let prefix = count_damaged_sequences(&new_spring_states);
-                if numbers.starts_with(&prefix) {
-                    let count = count_options(
-                        &new_spring_states,
-                        numbers,
-                        total_working_needed,
-                        total_working_found,
-                        unknown_count - 1,
-                        //seen,
-                    );
-                    //seen.insert(suffix.clone(), count);
-                    ways += count;
-                }
+            let prefix = count_damaged_sequences(&new_spring_states);
+            if numbers.starts_with(&prefix) {
+                let count = count_options(
+                    &new_spring_states,
+                    numbers,
+                    total_working_needed,
+                    total_working_found,
+                    unknown_count - 1,
+                    //seen,
+                );
+                //seen.insert(suffix.clone(), count);
+                ways += count;
+            }
             //}
             break;
         }
@@ -255,7 +251,12 @@ pub fn part_two(input: &str) -> Option<usize> {
                 unknown_count as u8,
                 //&mut seen,
             );
-            println!("finished {} with count: {}, cache records {}", line, count, seen.len());
+            println!(
+                "finished {} with count: {}, cache records {}",
+                line,
+                count,
+                seen.len()
+            );
             count as usize
         })
         .sum();
