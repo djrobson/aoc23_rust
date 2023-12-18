@@ -28,7 +28,6 @@ fn count_damaged_sequences(input: &[u8]) -> Vec<u8> {
 
 #[memoize]
 fn count_options(spring_states: Vec<u8>, numbers: Vec<u8>) -> usize {
-
     match (spring_states.is_empty(), numbers.is_empty()) {
         (true, true) => return 0,
         (true, false) => return 0,
