@@ -31,7 +31,6 @@ struct Bearing {
     y: i32,
     heading: Heading,
     straight: i8,
-    board_size: i32,
 }
 
 impl Bearing {
@@ -48,7 +47,7 @@ impl Bearing {
     }
     fn is_heading_on_board(&self, heading: Heading) -> bool {
         let (x, y) = self.next_location_with_heading(heading);
-        x >= 0 && x < self.board_size && y >= 0 && y < self.board_size
+        x >= 0 && x < GRID.get().unwrap()[0].len() as i32 && y >= 0 && y < GRID.get().unwrap().len() as i32
     }
 
     fn next_bearings(&self) -> Vec<Bearing> {
@@ -61,7 +60,6 @@ impl Bearing {
                 y: next_location.1,
                 heading: self.heading,
                 straight: self.straight + 1,
-                board_size: self.board_size,
             });
         }
         if self.is_heading_on_board(self.turn_left()) {
@@ -71,7 +69,6 @@ impl Bearing {
                 y: next_location.1,
                 heading: self.turn_left(),
                 straight: 0,
-                board_size: self.board_size,
             });
         }
         if self.is_heading_on_board(self.turn_right()) {
@@ -81,7 +78,40 @@ impl Bearing {
                 y: next_location.1,
                 heading: self.turn_right(),
                 straight: 0,
-                board_size: self.board_size,
+            });
+        }
+        bearings
+    }
+
+
+    fn next_bearings2(&self) -> Vec<Bearing> {
+        let mut bearings = Vec::new();
+
+        if self.straight < 10 && self.is_heading_on_board(self.heading) {
+            let next_location = self.next_location_with_heading(self.heading);
+            bearings.push(Bearing {
+                x: next_location.0,
+                y: next_location.1,
+                heading: self.heading,
+                straight: self.straight + 1,
+            });
+        }
+        if self.straight >= 3 && self.is_heading_on_board(self.turn_left()) {
+            let next_location = self.next_location_with_heading(self.turn_left());
+            bearings.push(Bearing {
+                x: next_location.0,
+                y: next_location.1,
+                heading: self.turn_left(),
+                straight: 0,
+            });
+        }
+        if self.straight >= 3 && self.is_heading_on_board(self.turn_right()) {
+            let next_location = self.next_location_with_heading(self.turn_right());
+            bearings.push(Bearing {
+                x: next_location.0,
+                y: next_location.1,
+                heading: self.turn_right(),
+                straight: 0,
             });
         }
         bearings
@@ -105,7 +135,8 @@ impl Bearing {
         }
     }
     fn is_final_location(&self) -> bool {
-        self.x == self.board_size - 1 && self.y == self.board_size - 1
+        self.x == GRID.get().unwrap()[0].len() as i32 - 1 
+        && self.y == GRID.get().unwrap().len() as i32 - 1 
     }
 }
 
@@ -139,7 +170,7 @@ fn process_grid(bearing: Bearing, total_loss: u32, best_seen: &mut HashMap<Beari
         .into_iter()
         .map(|b| process_grid(b, new_total_loss, best_seen))
         .min()
-        .unwrap();
+        .unwrap_or(u32::MAX);
 
     if min_bearings == u32::MAX {
         return u32::MAX;
@@ -156,16 +187,58 @@ fn process_grid(bearing: Bearing, total_loss: u32, best_seen: &mut HashMap<Beari
     new_total_loss + min_bearings
 }
 
+fn process_grid2(bearing: Bearing, total_loss: u32, best_seen: &mut HashMap<Bearing, u32>) -> u32 {
+
+       // if we already got here a better way, bail
+       let old_best = *best_seen.get(&bearing).unwrap_or(&u32::MAX);
+       if total_loss < old_best {
+           best_seen.insert(bearing, total_loss);
+       } else {
+           return u32::MAX;
+       }
+
+    // check cost to get here
+    let new_total_loss =
+        total_loss + GRID.get().unwrap()[bearing.y as usize][bearing.x as usize] as u32;
+
+    if bearing.is_final_location() {
+        if bearing.straight <= 3 {
+            println!("bad at end with score {} straight {}", new_total_loss, bearing.straight);
+            return u32::MAX;
+        } else {
+            println!("at end with score {} heading {:?} straight {}", new_total_loss, bearing.heading, bearing.straight);
+            return new_total_loss;
+        }
+    }
+
+    // hacky shit to avoid infinite random walks
+    if new_total_loss > GRID.get().unwrap().len() as u32 * 11 {
+        return u32::MAX;
+    }
+
+    // find the minimum total cost of all options from bearings
+    let min_bearings = bearing
+        .next_bearings2()
+        .into_iter()
+        .map(|b| process_grid2(b, new_total_loss, best_seen))
+        .min()
+        .unwrap_or(u32::MAX);
+
+    if min_bearings == u32::MAX {
+        return u32::MAX;
+    }
+    new_total_loss + min_bearings
+}
+
 pub fn part_one(input: &str) -> Option<u32> {
-    GRID.set(parse_input(input)).unwrap();
-    assert!(GRID.get().unwrap().len() == GRID.get().unwrap()[0].len());
+    let _ = GRID.set(parse_input(input));
+    //assert!(GRID.get().unwrap().len() == GRID.get().unwrap()[0].len());
     let board_size = GRID.get().unwrap().len() as i32;
     let bearing: Bearing = Bearing {
         x: 0,
         y: 0,
         heading: Right,
         straight: 0,
-        board_size,
     };
     let mut best_seen: HashMap<Bearing, u32> = HashMap::new();
     let _total_loss = process_grid(bearing, 0, &mut best_seen);
@@ -179,7 +252,6 @@ pub fn part_one(input: &str) -> Option<u32> {
                 y: board_size - 1,
                 heading: bearing,
                 straight,
-                board_size,
             };
             if best_seen.get(&bearing).is_some() {
                 best_finish = best_finish.min(*best_seen.get(&bearing).unwrap());
@@ -192,8 +264,37 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(best_finish)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    let _ = GRID.set(parse_input(input));
+    let bearing: Bearing = Bearing {
+        x: 0,
+        y: 0,
+        heading: Right,
+        straight: 0,
+    };
+    let mut best_seen: HashMap<Bearing, u32> = HashMap::new();
+    let _total_loss = process_grid2(bearing, 0, &mut best_seen);
+
+    // find the best finish
+    let mut best_finish = u32::MAX;
+    for bearing in [Down, Right] {
+        for straight in 4..10 {
+            let bearing = Bearing {
+                x: GRID.get().unwrap()[0].len() as i32 - 1,
+                y: GRID.get().unwrap().len() as i32 - 1,
+                heading: bearing,
+                straight,
+            };
+            if best_seen.get(&bearing).is_some() {
+                best_finish = best_finish.min(*best_seen.get(&bearing).unwrap());
+            }
+        }
+    }
+
+    // subtract start cost
+    best_finish -= GRID.get().unwrap()[0][0] as u32;
+    best_finish += GRID.get().unwrap()[GRID.get().unwrap().len() - 1][GRID.get().unwrap()[0].len() - 1] as u32;
+    Some(best_finish)
 }
 
 #[cfg(test)]
@@ -209,6 +310,15 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&aoc23_rust::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(94));
+    }
+    #[test]
+    fn test_part_two_2() {
+        let result = part_two("111111111111
+999999999991
+999999999991
+999999999991
+999999999991");
+        assert_eq!(result, Some(71));
     }
 }
