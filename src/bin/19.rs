@@ -106,6 +106,10 @@ fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, 
 
 pub fn part_one(input: &str) -> Option<u32> {
     let (rules, values) = parse_input(input);
+    let mut accepted: u32 = 0;
+    let mut rejected: u32 = 0;
+
+    
 
     None
 }
