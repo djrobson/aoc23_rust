@@ -47,7 +47,10 @@ impl Bearing {
     }
     fn is_heading_on_board(&self, heading: Heading) -> bool {
         let (x, y) = self.next_location_with_heading(heading);
-        x >= 0 && x < GRID.get().unwrap()[0].len() as i32 && y >= 0 && y < GRID.get().unwrap().len() as i32
+        x >= 0
+            && x < GRID.get().unwrap()[0].len() as i32
+            && y >= 0
+            && y < GRID.get().unwrap().len() as i32
     }
 
     fn next_bearings(&self) -> Vec<Bearing> {
@@ -82,7 +85,6 @@ impl Bearing {
         }
         bearings
     }
-
 
     fn next_bearings2(&self) -> Vec<Bearing> {
         let mut bearings = Vec::new();
@@ -135,8 +137,8 @@ impl Bearing {
         }
     }
     fn is_final_location(&self) -> bool {
-        self.x == GRID.get().unwrap()[0].len() as i32 - 1 
-        && self.y == GRID.get().unwrap().len() as i32 - 1 
+        self.x == GRID.get().unwrap()[0].len() as i32 - 1
+            && self.y == GRID.get().unwrap().len() as i32 - 1
     }
 }
 
@@ -188,14 +190,13 @@ fn process_grid(bearing: Bearing, total_loss: u32, best_seen: &mut HashMap<Beari
 }
 
 fn process_grid2(bearing: Bearing, total_loss: u32, best_seen: &mut HashMap<Bearing, u32>) -> u32 {
-
-       // if we already got here a better way, bail
-       let old_best = *best_seen.get(&bearing).unwrap_or(&u32::MAX);
-       if total_loss < old_best {
-           best_seen.insert(bearing, total_loss);
-       } else {
-           return u32::MAX;
-       }
+    // if we already got here a better way, bail
+    let old_best = *best_seen.get(&bearing).unwrap_or(&u32::MAX);
+    if total_loss < old_best {
+        best_seen.insert(bearing, total_loss);
+    } else {
+        return u32::MAX;
+    }
 
     // check cost to get here
     let new_total_loss =
@@ -203,10 +204,16 @@ fn process_grid2(bearing: Bearing, total_loss: u32, best_seen: &mut HashMap<Bear
 
     if bearing.is_final_location() {
         if bearing.straight <= 3 {
-            println!("bad at end with score {} straight {}", new_total_loss, bearing.straight);
+            println!(
+                "bad at end with score {} straight {}",
+                new_total_loss, bearing.straight
+            );
             return u32::MAX;
         } else {
-            println!("at end with score {} heading {:?} straight {}", new_total_loss, bearing.heading, bearing.straight);
+            println!(
+                "at end with score {} heading {:?} straight {}",
+                new_total_loss, bearing.heading, bearing.straight
+            );
             return new_total_loss;
         }
     }
@@ -293,7 +300,8 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     // subtract start cost
     best_finish -= GRID.get().unwrap()[0][0] as u32;
-    best_finish += GRID.get().unwrap()[GRID.get().unwrap().len() - 1][GRID.get().unwrap()[0].len() - 1] as u32;
+    best_finish +=
+        GRID.get().unwrap()[GRID.get().unwrap().len() - 1][GRID.get().unwrap()[0].len() - 1] as u32;
     Some(best_finish)
 }
 
@@ -314,11 +322,13 @@ mod tests {
     }
     #[test]
     fn test_part_two_2() {
-        let result = part_two("111111111111
+        let result = part_two(
+            "111111111111
 999999999991
 999999999991
 999999999991
-999999999991");
+999999999991",
+        );
         assert_eq!(result, Some(71));
     }
 }

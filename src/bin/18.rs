@@ -20,21 +20,17 @@ fn count_enclosed_squares(floor: &HashMap<(i32, i32), String>, start: (i32, i32)
     let mut queue: Vec<(i32, i32)> = Vec::new();
     queue.push(start);
 
-    while !queue.is_empty() {
-        let (x, y) = queue.pop().unwrap();
-
-        if floor.contains_key(&(x,y)) {
+    while let Some((x, y)) = queue.pop() {
+        if floor.contains_key(&(x, y)) {
             if border_visited.contains(&(x, y)) {
                 continue;
             } else {
                 border_visited.insert((x, y));
             }
+        } else if inside_visited.contains(&(x, y)) {
+            continue;
         } else {
-            if inside_visited.contains(&(x, y)) {
-                continue;
-            } else {
-                inside_visited.insert((x, y));
-            }
+            inside_visited.insert((x, y));
         }
 
         count += 1;
@@ -164,7 +160,6 @@ fn count_enclosed_squares(floor: &HashMap<(i32, i32), String>, start: (i32, i32)
                         inside_right,
                         inside_down
                     );*/
-                    ()
                 }
             }
         }
@@ -222,6 +217,9 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(_input: &str) -> Option<u32> {
+    // parse like normal
+    // confirm there's no adjascent lines
+    // expect about 1,000,000 rows, so we can't store the whole thing in memory
     None
 }
 
