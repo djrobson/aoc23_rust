@@ -14,21 +14,25 @@ mod tests {
 
     #[test]
     fn test_part_one_1() {
-        let result = part_one("broadcaster -> a, b, c
+        let result = part_one(
+            "broadcaster -> a, b, c
 %a -> b
 %b -> c
 %c -> inv
-&inv -> a");
+&inv -> a",
+        );
         assert_eq!(result, Some(32_000_000));
     }
 
     #[test]
     fn test_part_one_2() {
-        let result = part_one("broadcaster -> a
+        let result = part_one(
+            "broadcaster -> a
 %a -> inv, con
 &inv -> b
 %b -> con
-&con -> output");
+&con -> output",
+        );
         assert_eq!(result, None);
     }
 

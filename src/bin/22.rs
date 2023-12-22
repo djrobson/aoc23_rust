@@ -29,8 +29,9 @@ pub fn parse_input(input: &str) -> Vec<((i32, i32, i32), (i32, i32, i32))> {
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-
     let blocks = parse_input(input);
+    // record each shape in a 3d space
+    // let each shape fall until it hits the ground or a lower shape
 
     None
 }

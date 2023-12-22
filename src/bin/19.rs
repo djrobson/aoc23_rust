@@ -109,8 +109,6 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut accepted: u32 = 0;
     let mut rejected: u32 = 0;
 
-    
-
     None
 }
 
