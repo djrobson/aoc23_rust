@@ -1,12 +1,11 @@
 aoc23_rust::solution!(21);
-use std::collections::{HashSet, VecDeque};
+use std::collections::HashSet;
 
 fn parse_input(input: &str) -> (Vec<Vec<char>>, (usize, usize)) {
     let mut grid = Vec::new();
     let mut s_location = None;
 
     for (i, line) in input.lines().enumerate() {
-        let line = line;
         let row: Vec<char> = line.chars().collect();
         if let Some(j) = row.iter().position(|&c| c == 'S') {
             s_location = Some((i, j));
@@ -45,7 +44,7 @@ fn get_grid_on_next_step(
     let mut new_locations = HashSet::new();
 
     for (row, col) in locations {
-        let neighbors = get_neighbors(&grid, *row, *col);
+        let neighbors = get_neighbors(grid, *row, *col);
         for (n_row, n_col) in neighbors {
             new_locations.insert((n_row, n_col));
         }
@@ -68,7 +67,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(locations.len() as u32)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(_input: &str) -> Option<u32> {
     None
 }
 
@@ -79,7 +78,7 @@ mod tests {
     #[test]
     fn test_part_one() {
         let result = part_one(&aoc23_rust::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(42));
     }
 
     #[test]

@@ -1,6 +1,7 @@
 aoc23_rust::solution!(19);
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 struct Rule {
     member: u8,
     oper: char,
@@ -18,6 +19,7 @@ fn get_member_from_letter(letter: char) -> u8 {
     }
 }
 
+#[allow(clippy::type_complexity)]
 fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, i32)>) {
     // split input into a first and second section with a blank line in the middle
     let mut sections = input.split("\n\n");
@@ -105,9 +107,9 @@ fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, 
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let (rules, values) = parse_input(input);
-    let mut accepted: u32 = 0;
-    let mut rejected: u32 = 0;
+    let (_rules, _values) = parse_input(input);
+    let mut _accepted: u32 = 0;
+    let mut _rejected: u32 = 0;
 
     None
 }

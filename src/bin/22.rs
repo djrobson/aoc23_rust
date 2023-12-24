@@ -1,6 +1,7 @@
 aoc23_rust::solution!(22);
+use glam::IVec3;
 
-pub fn parse_input(input: &str) -> Vec<((i32, i32, i32), (i32, i32, i32))> {
+pub fn parse_input(input: &str) -> Vec<(IVec3, IVec3)> {
     let mut result = Vec::new();
 
     for line in input.lines() {
@@ -9,10 +10,10 @@ pub fn parse_input(input: &str) -> Vec<((i32, i32, i32), (i32, i32, i32))> {
             panic!("Invalid input ~");
         }
 
-        let parse_tuple = |s: &str| -> Option<(i32, i32, i32)> {
+        let parse_tuple = |s: &str| -> Option<IVec3> {
             let nums: Vec<i32> = s.split(',').filter_map(|x| x.parse().ok()).collect();
             if nums.len() == 3 {
-                Some((nums[0], nums[1], nums[2]))
+                Some(IVec3::new(nums[0], nums[1], nums[2]))
             } else {
                 None
             }
@@ -29,14 +30,14 @@ pub fn parse_input(input: &str) -> Vec<((i32, i32, i32), (i32, i32, i32))> {
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let blocks = parse_input(input);
+    let _blocks = parse_input(input);
     // record each shape in a 3d space
     // let each shape fall until it hits the ground or a lower shape
 
     None
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(_input: &str) -> Option<u32> {
     None
 }
 

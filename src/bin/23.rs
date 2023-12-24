@@ -119,9 +119,11 @@ fn print_dominator_graph(dominator_graph: &HashMap<IVec2, Vec<(IVec2, usize)>>) 
 
 pub fn part_one(input: &str) -> Option<u32> {
     let (grid, start) = parse_input(input);
-    let end = (grid[0].len() - 1, grid.len() - 2); // example and input ending is just left of the bottom right corner
+    let end = IVec2::new((grid[0].len() - 1) as i32, (grid.len() - 2) as i32); // example and input ending is just left of the bottom right corner
 
-    let vertices = get_vertices(&grid);
+    let mut vertices = get_vertices(&grid);
+    vertices.push(start);
+    vertices.push(end);
 
     // find the topological dominator graph for all vertices on grid
     // for each pair of vertices, find any path between them that doesn't go through any other vertex
@@ -149,7 +151,7 @@ pub fn part_one(input: &str) -> Option<u32> {
                     // check is there's already a path between the two vertices and keep the longer one???
                     dominator_graph
                         .entry(*vertex1)
-                        .or_insert(Vec::new())
+                        .or_default()
                         .push((*vertex2, path.len()));
                     break;
                 }
@@ -172,7 +174,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     None
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(_input: &str) -> Option<u32> {
     None
 }
 
