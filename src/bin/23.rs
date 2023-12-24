@@ -1,7 +1,7 @@
 aoc23_rust::solution!(23);
 use glam::IVec2;
 
-use std::collections::{HashSet, HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 fn parse_input(input: &str) -> (Vec<Vec<char>>, IVec2) {
     let lines: Vec<&str> = input.lines().collect();
@@ -31,25 +31,24 @@ fn get_vertices(grid: &Vec<Vec<char>>) -> Vec<IVec2> {
 
             // get the characters up, left, down, right from xy, if at least 2 of them are in "<>^v" then xy is a vertex
             let mut count = 0;
-            if x > 0 && "<>^v".contains(grid[y][x-1]) {
+            if x > 0 && "<>^v".contains(grid[y][x - 1]) {
                 count += 1;
             }
-            if x < grid[0].len() - 1 && "<>^v".contains(grid[y][x+1]) {
+            if x < grid[0].len() - 1 && "<>^v".contains(grid[y][x + 1]) {
                 count += 1;
             }
-            if y > 0 && "<>^v".contains(grid[y-1][x]) {
+            if y > 0 && "<>^v".contains(grid[y - 1][x]) {
                 count += 1;
             }
-            if y < grid.len() - 1 && "<>^v".contains(grid[y+1][x]) {
+            if y < grid.len() - 1 && "<>^v".contains(grid[y + 1][x]) {
                 count += 1;
             }
 
-            if ( y == 0 && x == 1 ) || (y == grid.len() -1 && x == grid[0].len() - 2) {
+            if (y == 0 && x == 1) || (y == grid.len() - 1 && x == grid[0].len() - 2) {
                 count += 2; // start and end are a vertex
             }
 
-            if count >= 2
-            {
+            if count >= 2 {
                 vertices.push(IVec2::new(x as i32, y as i32));
             }
         }
@@ -67,36 +66,36 @@ fn get_next_positions(grid: &Vec<Vec<char>>, position: IVec2) -> Vec<IVec2> {
     // if current position in < > ^ v then only go left right up or down, respectively
     match grid[y][x] {
         '<' => {
-            if x > 0 && grid[y][x-1] != '#' {
+            if x > 0 && grid[y][x - 1] != '#' {
                 next_positions.push(position + IVec2::NEG_X);
             }
-        },
+        }
         '>' => {
-            if x < grid[0].len() - 1 && grid[y][x+1] != '#' {
+            if x < grid[0].len() - 1 && grid[y][x + 1] != '#' {
                 next_positions.push(position + IVec2::X);
             }
-        },
+        }
         '^' => {
-            if y > 0 && grid[y-1][x] != '#' {
+            if y > 0 && grid[y - 1][x] != '#' {
                 next_positions.push(position + IVec2::NEG_Y);
             }
-        },
+        }
         'v' => {
-            if y < grid.len() - 1 && grid[y+1][x] != '#' {
+            if y < grid.len() - 1 && grid[y + 1][x] != '#' {
                 next_positions.push(position + IVec2::Y);
             }
-        },
+        }
         _ => {
-            if x > 0 && grid[y][x-1] != '#' {
+            if x > 0 && grid[y][x - 1] != '#' {
                 next_positions.push(position + IVec2::NEG_X);
             }
-            if x < grid[0].len() - 1 && grid[y][x+1] != '#' {
+            if x < grid[0].len() - 1 && grid[y][x + 1] != '#' {
                 next_positions.push(position + IVec2::X);
             }
-            if y > 0 && grid[y-1][x] != '#' {
+            if y > 0 && grid[y - 1][x] != '#' {
                 next_positions.push(position + IVec2::NEG_Y);
             }
-            if y < grid.len() - 1 && grid[y+1][x] != '#' {
+            if y < grid.len() - 1 && grid[y + 1][x] != '#' {
                 next_positions.push(position + IVec2::Y);
             }
         }
@@ -108,7 +107,7 @@ fn get_next_positions(grid: &Vec<Vec<char>>, position: IVec2) -> Vec<IVec2> {
 }
 
 // print dominator graph in DOT format
-fn print_dominator_graph(dominator_graph: &HashMap<IVec2,Vec<(IVec2, usize)>>) {
+fn print_dominator_graph(dominator_graph: &HashMap<IVec2, Vec<(IVec2, usize)>>) {
     println!("digraph G {{");
     for (vertex, dominated) in dominator_graph {
         for (dominated_vertex, _) in dominated {
@@ -128,10 +127,10 @@ pub fn part_one(input: &str) -> Option<u32> {
     // for each pair of vertices, find any path between them that doesn't go through any other vertex
     // if there is a path from the first vertex to the second, then the first vertex is a dominator of the second
     // append the second vertex to the dominated list of the first vertex
-    let mut dominator_graph: HashMap<IVec2,Vec<(IVec2, usize)>> = HashMap::new();
+    let mut dominator_graph: HashMap<IVec2, Vec<(IVec2, usize)>> = HashMap::new();
     for vertex1 in &vertices {
         for vertex2 in &vertices {
-            if (vertex1.x, vertex1.y) == ( vertex2.x, vertex2.y) {
+            if (vertex1.x, vertex1.y) == (vertex2.x, vertex2.y) {
                 continue;
             }
 
@@ -148,7 +147,10 @@ pub fn part_one(input: &str) -> Option<u32> {
 
                 if position == *vertex2 {
                     // check is there's already a path between the two vertices and keep the longer one???
-                    dominator_graph.entry(*vertex1).or_insert(Vec::new()).push((*vertex2, path.len()));
+                    dominator_graph
+                        .entry(*vertex1)
+                        .or_insert(Vec::new())
+                        .push((*vertex2, path.len()));
                     break;
                 }
 
