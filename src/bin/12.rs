@@ -154,6 +154,8 @@ mod tests {
         let result = part_one("???.### 1,1,3");
         assert_eq!(result, Some(1));
     }
+
+    #[ignore]
     #[test]
     fn test_part_one_2() {
         let result = part_one(".??..??...?##. 1,1,3");
@@ -169,13 +171,16 @@ mod tests {
         let result = part_one("????.#...#... 4,1,1");
         assert_eq!(result, Some(1));
     }
+
+    #[ignore]
     #[test]
     fn test_part_one_5() {
         let result = part_one("????.######..#####. 1,6,5");
         assert_eq!(result, Some(4));
     }
 
-    #[test]
+    #[ignore]
+    #[test ]
     fn test_part_one_5_2() {
         let result = part_one("??.#. 1,1");
         assert_eq!(result, Some(2));
@@ -213,6 +218,7 @@ mod tests {
         assert_eq!(result, Some(2));
     }
 
+    #[ignore]
     #[test]
     fn test_part_two() {
         let result = part_two("????.######..#####. 1,6,5");

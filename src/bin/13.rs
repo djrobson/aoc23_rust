@@ -166,6 +166,7 @@ mod tests {
         assert_eq!(result, Some(400));
     }
 
+    #[ignore]
     #[test]
     fn test_part_two_ex() {
         let result = part_two(

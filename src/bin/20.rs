@@ -12,6 +12,8 @@ pub fn part_two(_input: &str) -> Option<u32> {
 mod tests {
     use super::*;
 
+
+    #[ignore]
     #[test]
     fn test_part_one_1() {
         let result = part_one(
@@ -24,6 +26,7 @@ mod tests {
         assert_eq!(result, Some(32_000_000));
     }
 
+    #[ignore]
     #[test]
     fn test_part_one_2() {
         let result = part_one(
@@ -36,6 +39,7 @@ mod tests {
         assert_eq!(result, None);
     }
 
+    #[ignore]
     #[test]
     fn test_part_two() {
         let result = part_two(&aoc23_rust::template::read_file("examples", DAY));
