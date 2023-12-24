@@ -44,7 +44,7 @@ fn get_vertices(grid: &Vec<Vec<char>>) -> Vec<IVec2> {
                 count += 1;
             }
 
-            if c == 'S' || (y == grid.len() -1 && x == grid[0].len() - 2) {
+            if ( y == 0 && x == 1 ) || (y == grid.len() -1 && x == grid[0].len() - 2) {
                 count += 2; // start and end are a vertex
             }
 
