@@ -309,7 +309,6 @@ pub fn part_two(input: &str) -> Option<u32> {
 mod tests {
     use super::*;
 
-
     #[ignore]
     #[test]
     fn test_part_one() {

@@ -180,7 +180,7 @@ mod tests {
     }
 
     #[ignore]
-    #[test ]
+    #[test]
     fn test_part_one_5_2() {
         let result = part_one("??.#. 1,1");
         assert_eq!(result, Some(2));
