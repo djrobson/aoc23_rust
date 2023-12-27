@@ -7,47 +7,40 @@ use rustworkx_core::connectivity::stoer_wagner_min_cut;
 use rustworkx_core::petgraph::graph::{NodeIndex, UnGraph};
 use rustworkx_core::Result;
 
-
 fn parse_input(input: &str) -> UnGraph<(), ()> {
-    let mut vertices: HashMap<&str,NodeIndex> = HashMap::new();
-    let mut graph : UnGraph<(), ()> = UnGraph::new_undirected();
-    input
-        .lines()
-        .for_each(|line| {
-            let parts: Vec<&str> = line.split(':').collect();
-            let first = parts[0];
-            let rest = parts[1].trim().split(' ');
-            let first_node: NodeIndex = 
-                if !vertices.contains_key(first) {
-                    let first_node: NodeIndex  = graph.add_node(());
-                    vertices.insert(first, first_node);
-                    first_node
-                    
-                } else {
-                    *vertices.get(first).unwrap()
-                };
+    let mut vertices: HashMap<&str, NodeIndex> = HashMap::new();
+    let mut graph: UnGraph<(), ()> = UnGraph::new_undirected();
+    input.lines().for_each(|line| {
+        let parts: Vec<&str> = line.split(':').collect();
+        let first = parts[0];
+        let rest = parts[1].trim().split(' ');
+        let first_node: NodeIndex = if !vertices.contains_key(first) {
+            let first_node: NodeIndex = graph.add_node(());
+            vertices.insert(first, first_node);
+            first_node
+        } else {
+            *vertices.get(first).unwrap()
+        };
 
-            for rest_name in rest {
-                let rest_node: NodeIndex = 
-                    if !vertices.contains_key(rest_name) {
-                        let rest_node = graph.add_node(());
-                        vertices.insert(rest_name, rest_node);
-                        rest_node
-                    } else {
-                        *vertices.get(rest_name).unwrap()
-                    };
-                graph.add_edge(first_node, rest_node, ());
-            }
-        });
-    println!("found {} vertices", vertices.len());
-    graph.shrink_to_fit();
+        for rest_name in rest {
+            let rest_node: NodeIndex = if !vertices.contains_key(rest_name) {
+                let rest_node = graph.add_node(());
+                vertices.insert(rest_name, rest_node);
+                rest_node
+            } else {
+                *vertices.get(rest_name).unwrap()
+            };
+            graph.add_edge(first_node, rest_node, ());
+        }
+    });
+    //println!("found {} vertices", vertices.len());
+    graph.shrink_to_fit(); // remove the extra capacity so we can get the number of nodes
     graph
 }
 
-
 pub fn part_one(input: &str) -> Option<u32> {
     let graph = parse_input(input);
-    println!("{:?}", graph);
+    //println!("{:?}", graph);
     let min_cut_res: Result<Option<(usize, Vec<_>)>> = stoer_wagner_min_cut(&graph, |_| Ok(1));
 
     let (min_cut, partition) = min_cut_res.unwrap().unwrap();
