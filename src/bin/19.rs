@@ -97,7 +97,7 @@ fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(u32, u32, u32, 
                     member: 0,
                     oper: '>',
                     value: 0,
-                    dest: dest,
+                    dest,
                 }
             };
             rules.get_mut(&name).unwrap().push(rule);
