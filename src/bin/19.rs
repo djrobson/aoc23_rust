@@ -1,12 +1,38 @@
 aoc23_rust::solution!(19);
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-#[allow(dead_code)]
+#[derive(Clone)]
 struct Rule {
     member: u8,
     oper: char,
     value: u32,
     dest: String,
+}
+
+fn eval_rule(value: &(u32, u32, u32, u32), rule: &Rule) -> Option<String> {
+    let conditional_jump = match rule.oper {
+        '>' => match rule.member {
+            0 => value.0 > rule.value,
+            1 => value.1 > rule.value,
+            2 => value.2 > rule.value,
+            3 => value.3 > rule.value,
+            _ => panic!("Invalid member"),
+        },
+        '<' => match rule.member {
+            0 => value.0 < rule.value,
+            1 => value.1 < rule.value,
+            2 => value.2 < rule.value,
+            3 => value.3 < rule.value,
+            _ => panic!("Invalid member"),
+        },
+        _ => panic!("Invalid operator"),
+    };
+
+    if conditional_jump {
+        Some(rule.dest.clone())
+    } else {
+        None
+    }
 }
 
 fn get_member_from_letter(letter: char) -> u8 {
@@ -20,7 +46,7 @@ fn get_member_from_letter(letter: char) -> u8 {
 }
 
 #[allow(clippy::type_complexity)]
-fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, i32)>) {
+fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(u32, u32, u32, u32)>) {
     // split input into a first and second section with a blank line in the middle
     let mut sections = input.split("\n\n");
 
@@ -65,12 +91,13 @@ fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, 
                     dest,
                 }
             } else {
+                let dest = segment.to_string();
                 // this rule should always succeed
                 Rule {
                     member: 0,
                     oper: '>',
                     value: 0,
-                    dest: name.clone(),
+                    dest: dest,
                 }
             };
             rules.get_mut(&name).unwrap().push(rule);
@@ -85,7 +112,7 @@ fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, 
     // the names always exist in the same order, so throw them out
     // store the resulting name and value into a tuple of i32s
     // store the tuple into a vector
-    let values: Vec<(i32, i32, i32, i32)> = sections
+    let values: Vec<(u32, u32, u32, u32)> = sections
         .next()
         .unwrap()
         .lines()
@@ -96,9 +123,9 @@ fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, 
                 .split(',')
                 .map(|name_val| {
                     // throw away the front 2 chars and parse the remained to an i32
-                    name_val[2..].parse::<i32>().unwrap()
+                    name_val[2..].parse::<u32>().unwrap()
                 })
-                .collect::<Vec<i32>>();
+                .collect::<Vec<u32>>();
             (vals[0], vals[1], vals[2], vals[3])
         })
         .collect();
@@ -107,11 +134,43 @@ fn parse_input(input: &str) -> (HashMap<String, Vec<Rule>>, Vec<(i32, i32, i32, 
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let (_rules, _values) = parse_input(input);
-    let mut _accepted: u32 = 0;
-    let mut _rejected: u32 = 0;
+    let (rules, values) = parse_input(input);
 
-    None
+    let mut accepted: u32 = 0;
+    //let mut rejected: u32 = 0;
+
+    // for each value we recieved, evaluate the rules until accepted or rejected
+    for value in values {
+        //  start at IN and work until you find
+        let mut rules_seen: HashSet<String> = HashSet::new();
+        let mut rule_vec_name = "in".to_string();
+        'process_value: loop {
+            if rules_seen.contains(&rule_vec_name) {
+                panic!("Infinite loop detected {}", rule_vec_name);
+            }
+            rules_seen.insert(rule_vec_name.clone());
+
+            let rule_vec = rules.get(&rule_vec_name).unwrap();
+            let mut next_rule;
+            'process_rules: for rule in rule_vec {
+                next_rule = eval_rule(&value, rule);
+
+                if next_rule.is_some() {
+                    if next_rule == Some("A".to_string()) {
+                        accepted += value.0 + value.1 + value.2 + value.3;
+                        break 'process_value;
+                    } else if next_rule == Some("R".to_string()) {
+                        break 'process_value;
+                    } else {
+                        rule_vec_name = next_rule.unwrap();
+                        break 'process_rules;
+                    }
+                }
+            }
+        }
+    }
+
+    Some(accepted)
 }
 
 pub fn part_two(_input: &str) -> Option<u32> {
@@ -125,7 +184,7 @@ mod tests {
     #[test]
     fn test_part_one() {
         let result = part_one(&aoc23_rust::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(19114));
     }
 
     #[test]
