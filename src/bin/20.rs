@@ -185,7 +185,71 @@ pub fn part_one(input: &str) -> Option<usize> {
     Some(high_pulse * low_pulse)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
+fn least_common_multiple(nums: Vec<usize>) -> usize {
+    let mut my_nums = nums.clone();
+    let mut lcm = 1;
+    let mut divisor = 2;
+
+    loop {
+        let mut divisible = false;
+        for num in &my_nums {
+            if num % divisor == 0 {
+                divisible = true;
+                break;
+            }
+        }
+
+        if divisible {
+            lcm *= divisor;
+            for num in &mut my_nums {
+                if *num % divisor == 0 {
+                    *num /= divisor;
+                }
+            }
+        } else {
+            divisor += 1;
+        }
+
+        if my_nums.iter().all(|x| *x == 1) {
+            break;
+        }
+    }
+    lcm
+}
+
+pub fn part_two(input: &str) -> Option<usize> {
+    let mut modules: HashMap<String, Module> = parse_input(input);
+    let mut event_queue: VecDeque<Event> = VecDeque::new();
+
+    let penultimate_nodes = modules.get_key_value("rg").unwrap().1.inputs.keys();
+    let mut pen_hash: HashMap<String, Option<usize>> = penultimate_nodes
+        .map(|x| (x.clone(), None))
+        .collect();
+
+    for tick in 1.. {
+        // tap the button once per iteration
+        event_queue.push_back(Event {
+            from: "button".to_string(),
+            time: tick,
+            module: "broadcaster".to_string(),
+            state: WireState::Low,
+        });
+
+        while let Some(event) = event_queue.pop_front() {
+            //println!("{} {:?} {}", event.from, event.state, event.module);
+            if event.state == WireState::Low
+                && pen_hash.get(&event.module).is_some_and(|v| v.is_none())
+            {
+                println!("found cycle for {} at time {} with tick {}", event.module, event.time, tick);
+                pen_hash.insert(event.module.clone(), Some(tick as usize));
+                if pen_hash.values().all(|x| x.is_some()) {
+                    let vals = pen_hash.values().map(|v| v.unwrap()).collect::<Vec<usize>>();
+                    return Some(least_common_multiple(vals));
+                }
+            }
+            event_queue.append(&mut process_event(&event, &mut modules));
+        }
+    }
     None
 }
 
@@ -221,7 +285,7 @@ output -> ",
     #[ignore]
     #[test]
     fn test_part_two() {
-        let result = part_two(&aoc23_rust::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        let result = part_two(&aoc23_rust::template::read_file("inputs", DAY));
+        assert_eq!(result, Some(13873170220));
     }
 }
