@@ -68,7 +68,7 @@ fn parse_input(input: &str) -> HashMap<String, Module> {
         // check if anyone else outputs to us
         for module in &modules_copy {
             // keep a record of who outputs to us in our inputs
-            if module.1.outputs.contains(&module_name) {
+            if module.1.outputs.contains(module_name) {
                 modules
                     .get_mut(module_name)
                     .unwrap()
@@ -82,7 +82,9 @@ fn parse_input(input: &str) -> HashMap<String, Module> {
 
 fn process_event(event: &Event, modules: &mut HashMap<String, Module>) -> VecDeque<Event> {
     let mut new_events: VecDeque<Event> = VecDeque::new();
-    let module = modules.get_mut(&event.module).expect(&format!("Unknown module {}", event.module));
+    let module = modules
+        .get_mut(&event.module)
+        .unwrap_or_else(|| panic!("Unknown module {}", event.module));
     match module.mod_type {
         ModuleType::FlipFlip => {
             if event.state == WireState::Low {
