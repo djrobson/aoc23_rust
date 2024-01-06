@@ -222,9 +222,8 @@ pub fn part_two(input: &str) -> Option<usize> {
     let mut event_queue: VecDeque<Event> = VecDeque::new();
 
     let penultimate_nodes = modules.get_key_value("rg").unwrap().1.inputs.keys();
-    let mut pen_hash: HashMap<String, Option<usize>> = penultimate_nodes
-        .map(|x| (x.clone(), None))
-        .collect();
+    let mut pen_hash: HashMap<String, Option<usize>> =
+        penultimate_nodes.map(|x| (x.clone(), None)).collect();
 
     for tick in 1.. {
         // tap the button once per iteration
@@ -240,10 +239,16 @@ pub fn part_two(input: &str) -> Option<usize> {
             if event.state == WireState::Low
                 && pen_hash.get(&event.module).is_some_and(|v| v.is_none())
             {
-                println!("found cycle for {} at time {} with tick {}", event.module, event.time, tick);
+                println!(
+                    "found cycle for {} at time {} with tick {}",
+                    event.module, event.time, tick
+                );
                 pen_hash.insert(event.module.clone(), Some(tick as usize));
                 if pen_hash.values().all(|x| x.is_some()) {
-                    let vals = pen_hash.values().map(|v| v.unwrap()).collect::<Vec<usize>>();
+                    let vals = pen_hash
+                        .values()
+                        .map(|v| v.unwrap())
+                        .collect::<Vec<usize>>();
                     return Some(least_common_multiple(vals));
                 }
             }
